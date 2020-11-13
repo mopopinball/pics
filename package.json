@@ -1,6 +1,7 @@
 {
   "name": "pics",
   "version": "1.0.0",
+  "private": true,
   "description": "Embedded code running on the PIC chips",
   "main": "index.js",
   "scripts": {
