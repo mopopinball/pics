@@ -44,10 +44,13 @@
 #include "mcc_generated_files/mcc.h"
 #include "mcc_generated_files/drivers/i2c_slave.h"
 #include "payloads.h"
+//#include "string.h"
 
 volatile uint8_t payloadIndex = 0;
-volatile uint8_t payload[28];//  = {0, 0, 0, 0, 0, 0, 0, 0, 0};
-volatile bool payloadReady = false;
+volatile uint8_t payload[28];
+// a double buffer (complete payload)
+volatile uint8_t payloadComplete[28];
+//volatile bool payloadReady = false;
 
 //void setPlayer1(SystemEightyOrigPayload* parsedPayload);
 //void setPlayer2(SystemEightyOrigPayload* parsedPayload);
@@ -56,6 +59,7 @@ volatile bool payloadReady = false;
 //void setStatus(SystemEightyOrigPayload* parsedPayload);
 void clearDigit(void);
 void setDigit(int digit);
+void setSegmentOutput(int digit, SystemEightyOrigPayload* parsedPayload);
 void onAddr(void);
 void onRead(void);
 
@@ -103,7 +107,20 @@ void main(void)
     i2c_slave_setAddrIntHandler(onAddr);
     
     const int MODE = 0;
-    volatile int firstDigit = 1;
+    volatile int digit = 1;
+
+    /**
+     * For each internal loop (eg. A/B, C), set the segments for the current
+     * digits and then enable the digits output.
+     * 
+     * V 5.1
+     *  80/A displays are driven by two 74HCT238 chips
+     *  
+     *  Disable both outputs via clearDigit()
+     *  Set the segments to the correct values
+     *  Set the digits address
+     *  Enabled the digits output
+     */
     while (1)
     {
 //        __delay_ms(1000);
@@ -114,328 +131,25 @@ void main(void)
 //        if (MODE == 0) {
 //            
 //        }
-        
-        SystemEightyOrigPayload* parsedPayload = (SystemEightyOrigPayload*)payload;
+
+        // Get the payload (updated by the interrupt)
+        SystemEightyOrigPayload* parsedPayload = (SystemEightyOrigPayload*)payloadComplete;
+
         clearDigit();
-        if (firstDigit == 1) {
-            setAOutput(
-                parsedPayload->PLAYER1_D1_A,
-                parsedPayload->PLAYER1_D1_B,
-                parsedPayload->PLAYER1_D1_C,
-                parsedPayload->PLAYER1_D1_D,
-                parsedPayload->PLAYER1_D1_E,
-                parsedPayload->PLAYER1_D1_F,
-                parsedPayload->PLAYER1_D1_G,
-                parsedPayload->PLAYER1_D1_H
-            );
-            setBOutput(
-                parsedPayload->PLAYER3_D1_A,
-                parsedPayload->PLAYER3_D1_B,
-                parsedPayload->PLAYER3_D1_C,
-                parsedPayload->PLAYER3_D1_D,
-                parsedPayload->PLAYER3_D1_E,
-                parsedPayload->PLAYER3_D1_F,
-                parsedPayload->PLAYER3_D1_G,
-                parsedPayload->PLAYER3_D1_H
-            );
-        }
-        else if (firstDigit == 2) {
-            setAOutput(
-                parsedPayload->PLAYER1_D2_A,
-                parsedPayload->PLAYER1_D2_B,
-                parsedPayload->PLAYER1_D2_C,
-                parsedPayload->PLAYER1_D2_D,
-                parsedPayload->PLAYER1_D2_E,
-                parsedPayload->PLAYER1_D2_F,
-                parsedPayload->PLAYER1_D2_G,
-                parsedPayload->PLAYER1_D2_H
-            );
-            setBOutput(
-                parsedPayload->PLAYER3_D2_A,
-                parsedPayload->PLAYER3_D2_B,
-                parsedPayload->PLAYER3_D2_C,
-                parsedPayload->PLAYER3_D2_D,
-                parsedPayload->PLAYER3_D2_E,
-                parsedPayload->PLAYER3_D2_F,
-                parsedPayload->PLAYER3_D2_G,
-                parsedPayload->PLAYER3_D2_H
-            );
-        }
-        else if (firstDigit == 3) {
-            setAOutput(
-                parsedPayload->PLAYER1_D3_A,
-                parsedPayload->PLAYER1_D3_B,
-                parsedPayload->PLAYER1_D3_C,
-                parsedPayload->PLAYER1_D3_D,
-                parsedPayload->PLAYER1_D3_E,
-                parsedPayload->PLAYER1_D3_F,
-                parsedPayload->PLAYER1_D3_G,
-                parsedPayload->PLAYER1_D3_H
-            );
-            setBOutput(
-                parsedPayload->PLAYER3_D3_A,
-                parsedPayload->PLAYER3_D3_B,
-                parsedPayload->PLAYER3_D3_C,
-                parsedPayload->PLAYER3_D3_D,
-                parsedPayload->PLAYER3_D3_E,
-                parsedPayload->PLAYER3_D3_F,
-                parsedPayload->PLAYER3_D3_G,
-                parsedPayload->PLAYER3_D3_H
-            );
-        }
-        else if (firstDigit == 4) {
-            setAOutput(
-                parsedPayload->PLAYER1_D4_A,
-                parsedPayload->PLAYER1_D4_B,
-                parsedPayload->PLAYER1_D4_C,
-                parsedPayload->PLAYER1_D4_D,
-                parsedPayload->PLAYER1_D4_E,
-                parsedPayload->PLAYER1_D4_F,
-                parsedPayload->PLAYER1_D4_G,
-                parsedPayload->PLAYER1_D4_H
-            );
-            setBOutput(
-                parsedPayload->PLAYER3_D4_A,
-                parsedPayload->PLAYER3_D4_B,
-                parsedPayload->PLAYER3_D4_C,
-                parsedPayload->PLAYER3_D4_D,
-                parsedPayload->PLAYER3_D4_E,
-                parsedPayload->PLAYER3_D4_F,
-                parsedPayload->PLAYER3_D4_G,
-                parsedPayload->PLAYER3_D1_H
-            );
-        }
-        else if (firstDigit == 5) {
-            setAOutput(
-                parsedPayload->PLAYER1_D5_A,
-                parsedPayload->PLAYER1_D5_B,
-                parsedPayload->PLAYER1_D5_C,
-                parsedPayload->PLAYER1_D5_D,
-                parsedPayload->PLAYER1_D5_E,
-                parsedPayload->PLAYER1_D5_F,
-                parsedPayload->PLAYER1_D5_G,
-                parsedPayload->PLAYER1_D5_H
-            );
-            setBOutput(
-                parsedPayload->PLAYER3_D5_A,
-                parsedPayload->PLAYER3_D5_B,
-                parsedPayload->PLAYER3_D5_C,
-                parsedPayload->PLAYER3_D5_D,
-                parsedPayload->PLAYER3_D5_E,
-                parsedPayload->PLAYER3_D5_F,
-                parsedPayload->PLAYER3_D5_G,
-                parsedPayload->PLAYER3_D5_H
-            );
-        }
-        else if (firstDigit == 6) {
-            setAOutput(
-                parsedPayload->PLAYER1_D6_A,
-                parsedPayload->PLAYER1_D6_B,
-                parsedPayload->PLAYER1_D6_C,
-                parsedPayload->PLAYER1_D6_D,
-                parsedPayload->PLAYER1_D6_E,
-                parsedPayload->PLAYER1_D6_F,
-                parsedPayload->PLAYER1_D6_G,
-                parsedPayload->PLAYER1_D6_H
-            );
-            setBOutput(
-                parsedPayload->PLAYER3_D6_A,
-                parsedPayload->PLAYER3_D6_B,
-                parsedPayload->PLAYER3_D6_C,
-                parsedPayload->PLAYER3_D6_D,
-                parsedPayload->PLAYER3_D6_E,
-                parsedPayload->PLAYER3_D6_F,
-                parsedPayload->PLAYER3_D6_G,
-                parsedPayload->PLAYER3_D6_H
-            );
-        }
-        else if (firstDigit == 7) {
-            setAOutput(
-                parsedPayload->PLAYER2_D1_A,
-                parsedPayload->PLAYER2_D1_B,
-                parsedPayload->PLAYER2_D1_C,
-                parsedPayload->PLAYER2_D1_D,
-                parsedPayload->PLAYER2_D1_E,
-                parsedPayload->PLAYER2_D1_F,
-                parsedPayload->PLAYER2_D1_G,
-                parsedPayload->PLAYER2_D1_H
-            );
-            setBOutput(
-                parsedPayload->PLAYER4_D1_A,
-                parsedPayload->PLAYER4_D1_B,
-                parsedPayload->PLAYER4_D1_C,
-                parsedPayload->PLAYER4_D1_D,
-                parsedPayload->PLAYER4_D1_E,
-                parsedPayload->PLAYER4_D1_F,
-                parsedPayload->PLAYER4_D1_G,
-                parsedPayload->PLAYER4_D1_H
-            );
-        }
-        else if (firstDigit == 8) {
-            setAOutput(
-                parsedPayload->PLAYER2_D2_A,
-                parsedPayload->PLAYER2_D2_B,
-                parsedPayload->PLAYER2_D2_C,
-                parsedPayload->PLAYER2_D2_D,
-                parsedPayload->PLAYER2_D2_E,
-                parsedPayload->PLAYER2_D2_F,
-                parsedPayload->PLAYER2_D2_G,
-                parsedPayload->PLAYER2_D2_H
-            );
-            setBOutput(
-                parsedPayload->PLAYER4_D2_A,
-                parsedPayload->PLAYER4_D2_B,
-                parsedPayload->PLAYER4_D2_C,
-                parsedPayload->PLAYER4_D2_D,
-                parsedPayload->PLAYER4_D2_E,
-                parsedPayload->PLAYER4_D2_F,
-                parsedPayload->PLAYER4_D2_G,
-                parsedPayload->PLAYER4_D2_H
-            );
-        }
-        else if (firstDigit == 9) {
-            setAOutput(
-                parsedPayload->PLAYER2_D3_A,
-                parsedPayload->PLAYER2_D3_B,
-                parsedPayload->PLAYER2_D3_C,
-                parsedPayload->PLAYER2_D3_D,
-                parsedPayload->PLAYER2_D3_E,
-                parsedPayload->PLAYER2_D3_F,
-                parsedPayload->PLAYER2_D3_G,
-                parsedPayload->PLAYER2_D3_H
-            );
-            setBOutput(
-                parsedPayload->PLAYER4_D3_A,
-                parsedPayload->PLAYER4_D3_B,
-                parsedPayload->PLAYER4_D3_C,
-                parsedPayload->PLAYER4_D3_D,
-                parsedPayload->PLAYER4_D3_E,
-                parsedPayload->PLAYER4_D3_F,
-                parsedPayload->PLAYER4_D3_G,
-                parsedPayload->PLAYER4_D3_H
-            );
-        }
-        else if (firstDigit == 10) {
-            setAOutput(
-                parsedPayload->PLAYER2_D4_A,
-                parsedPayload->PLAYER2_D4_B,
-                parsedPayload->PLAYER2_D4_C,
-                parsedPayload->PLAYER2_D4_D,
-                parsedPayload->PLAYER2_D4_E,
-                parsedPayload->PLAYER2_D4_F,
-                parsedPayload->PLAYER2_D4_G,
-                parsedPayload->PLAYER2_D4_H
-            );
-            setBOutput(
-                parsedPayload->PLAYER4_D4_A,
-                parsedPayload->PLAYER4_D4_B,
-                parsedPayload->PLAYER4_D4_C,
-                parsedPayload->PLAYER4_D4_D,
-                parsedPayload->PLAYER4_D4_E,
-                parsedPayload->PLAYER4_D4_F,
-                parsedPayload->PLAYER4_D4_G,
-                parsedPayload->PLAYER4_D4_H
-            );
-        }
-        else if (firstDigit == 11) {
-            setAOutput(
-                parsedPayload->PLAYER2_D5_A,
-                parsedPayload->PLAYER2_D5_B,
-                parsedPayload->PLAYER2_D5_C,
-                parsedPayload->PLAYER2_D5_D,
-                parsedPayload->PLAYER2_D5_E,
-                parsedPayload->PLAYER2_D5_F,
-                parsedPayload->PLAYER2_D5_G,
-                parsedPayload->PLAYER2_D5_H
-            );
-            setBOutput(
-                parsedPayload->PLAYER4_D5_A,
-                parsedPayload->PLAYER4_D5_B,
-                parsedPayload->PLAYER4_D5_C,
-                parsedPayload->PLAYER4_D5_D,
-                parsedPayload->PLAYER4_D5_E,
-                parsedPayload->PLAYER4_D5_F,
-                parsedPayload->PLAYER4_D5_G,
-                parsedPayload->PLAYER4_D5_H
-            );
-        }
-        else if (firstDigit == 12) {
-            setAOutput(
-                parsedPayload->PLAYER2_D6_A,
-                parsedPayload->PLAYER2_D6_B,
-                parsedPayload->PLAYER2_D6_C,
-                parsedPayload->PLAYER2_D6_D,
-                parsedPayload->PLAYER2_D6_E,
-                parsedPayload->PLAYER2_D6_F,
-                parsedPayload->PLAYER2_D6_G,
-                parsedPayload->PLAYER2_D6_H
-            );
-            setBOutput(
-                parsedPayload->PLAYER4_D6_A,
-                parsedPayload->PLAYER4_D6_B,
-                parsedPayload->PLAYER4_D6_C,
-                parsedPayload->PLAYER4_D6_D,
-                parsedPayload->PLAYER4_D6_E,
-                parsedPayload->PLAYER4_D6_F,
-                parsedPayload->PLAYER4_D6_G,
-                parsedPayload->PLAYER4_D6_H
-            );
-        }
-        else if (firstDigit == 13) {
-            setCOutput(
-                parsedPayload->STATUS_D13_A,
-                parsedPayload->STATUS_D13_B,
-                parsedPayload->STATUS_D13_C,
-                parsedPayload->STATUS_D13_D,
-                parsedPayload->STATUS_D13_E,
-                parsedPayload->STATUS_D13_F,
-                parsedPayload->STATUS_D13_G,
-                0
-            );
-        }
-        else if (firstDigit == 14) {
-            setCOutput(
-                parsedPayload->STATUS_D14_A,
-                parsedPayload->STATUS_D14_B,
-                parsedPayload->STATUS_D14_C,
-                parsedPayload->STATUS_D14_D,
-                parsedPayload->STATUS_D14_E,
-                parsedPayload->STATUS_D14_F,
-                parsedPayload->STATUS_D14_G,
-                0
-            );
-        }
-        else if (firstDigit == 15) {
-            setCOutput(
-                parsedPayload->STATUS_D15_A,
-                parsedPayload->STATUS_D15_B,
-                parsedPayload->STATUS_D15_C,
-                parsedPayload->STATUS_D15_D,
-                parsedPayload->STATUS_D15_E,
-                parsedPayload->STATUS_D15_F,
-                parsedPayload->STATUS_D15_G,
-                0
-            );
-        }
-        else if (firstDigit == 16) {
-            setCOutput(
-                parsedPayload->STATUS_D16_A,
-                parsedPayload->STATUS_D16_B,
-                parsedPayload->STATUS_D16_C,
-                parsedPayload->STATUS_D16_D,
-                parsedPayload->STATUS_D16_E,
-                parsedPayload->STATUS_D16_F,
-                parsedPayload->STATUS_D16_G,
-                0
-            );
+        
+        // Set the segments output
+        setSegmentOutput(digit, parsedPayload);
+        
+        // set the digit address
+        setDigit(digit);
+        
+        // reset the loop counter
+        digit++;
+        if (digit >= 17) {
+            digit = 1;
         }
         
-        setDigit(firstDigit);
-        firstDigit++;
-        if (firstDigit == 17) {
-            firstDigit = 1;
-        }
-        
+        // wait
         __delay_us(250);
         
 //        setPlayer1(parsedPayload);
@@ -506,7 +220,7 @@ void setCOutput(
 }
 
 void clearDigit() {
-    E1_E3_SetHigh();
+    // E2 must be LOW to enable both IC5 and IC6.
     E2_SetHigh();
 }
 
@@ -552,31 +266,348 @@ void setDigit(int digit) {
         A2_SetHigh();
     }
 
-    
-//    if(1 <= digit && digit <= 8) {
-//        E1_E3_SetLow();
-//    }
-//    else {
-//        E1_E3_SetHigh();
-//        
-//    }
+    // To enable IC5 (digits 1-8) E1_E3_LAT = LOW; E2 = LOW
+    // To enable IC6 (digits 9-16) E1_E3_LAT = HIGH; E2 = LOW
     E1_E3_LAT = digit > 8;
+    // this is the global digit enable (active LOW)
     E2_SetLow();
-//    __delay_ms(1);
+}
+
+void setSegmentOutput(int digit, SystemEightyOrigPayload* parsedPayload) {
+    if (digit == 1) {
+            setAOutput(
+                parsedPayload->PLAYER1_D1_A,
+                parsedPayload->PLAYER1_D1_B,
+                parsedPayload->PLAYER1_D1_C,
+                parsedPayload->PLAYER1_D1_D,
+                parsedPayload->PLAYER1_D1_E,
+                parsedPayload->PLAYER1_D1_F,
+                parsedPayload->PLAYER1_D1_G,
+                parsedPayload->PLAYER1_D1_H
+            );
+            setBOutput(
+                parsedPayload->PLAYER3_D1_A,
+                parsedPayload->PLAYER3_D1_B,
+                parsedPayload->PLAYER3_D1_C,
+                parsedPayload->PLAYER3_D1_D,
+                parsedPayload->PLAYER3_D1_E,
+                parsedPayload->PLAYER3_D1_F,
+                parsedPayload->PLAYER3_D1_G,
+                parsedPayload->PLAYER3_D1_H
+            );
+        }
+        else if (digit == 2) {
+            setAOutput(
+                parsedPayload->PLAYER1_D2_A,
+                parsedPayload->PLAYER1_D2_B,
+                parsedPayload->PLAYER1_D2_C,
+                parsedPayload->PLAYER1_D2_D,
+                parsedPayload->PLAYER1_D2_E,
+                parsedPayload->PLAYER1_D2_F,
+                parsedPayload->PLAYER1_D2_G,
+                parsedPayload->PLAYER1_D2_H
+            );
+            setBOutput(
+                parsedPayload->PLAYER3_D2_A,
+                parsedPayload->PLAYER3_D2_B,
+                parsedPayload->PLAYER3_D2_C,
+                parsedPayload->PLAYER3_D2_D,
+                parsedPayload->PLAYER3_D2_E,
+                parsedPayload->PLAYER3_D2_F,
+                parsedPayload->PLAYER3_D2_G,
+                parsedPayload->PLAYER3_D2_H
+            );
+        }
+        else if (digit == 3) {
+            setAOutput(
+                parsedPayload->PLAYER1_D3_A,
+                parsedPayload->PLAYER1_D3_B,
+                parsedPayload->PLAYER1_D3_C,
+                parsedPayload->PLAYER1_D3_D,
+                parsedPayload->PLAYER1_D3_E,
+                parsedPayload->PLAYER1_D3_F,
+                parsedPayload->PLAYER1_D3_G,
+                parsedPayload->PLAYER1_D3_H
+            );
+            setBOutput(
+                parsedPayload->PLAYER3_D3_A,
+                parsedPayload->PLAYER3_D3_B,
+                parsedPayload->PLAYER3_D3_C,
+                parsedPayload->PLAYER3_D3_D,
+                parsedPayload->PLAYER3_D3_E,
+                parsedPayload->PLAYER3_D3_F,
+                parsedPayload->PLAYER3_D3_G,
+                parsedPayload->PLAYER3_D3_H
+            );
+        }
+        else if (digit == 4) {
+            setAOutput(
+                parsedPayload->PLAYER1_D4_A,
+                parsedPayload->PLAYER1_D4_B,
+                parsedPayload->PLAYER1_D4_C,
+                parsedPayload->PLAYER1_D4_D,
+                parsedPayload->PLAYER1_D4_E,
+                parsedPayload->PLAYER1_D4_F,
+                parsedPayload->PLAYER1_D4_G,
+                parsedPayload->PLAYER1_D4_H
+            );
+            setBOutput(
+                parsedPayload->PLAYER3_D4_A,
+                parsedPayload->PLAYER3_D4_B,
+                parsedPayload->PLAYER3_D4_C,
+                parsedPayload->PLAYER3_D4_D,
+                parsedPayload->PLAYER3_D4_E,
+                parsedPayload->PLAYER3_D4_F,
+                parsedPayload->PLAYER3_D4_G,
+                parsedPayload->PLAYER3_D1_H
+            );
+        }
+        else if (digit == 5) {
+            setAOutput(
+                parsedPayload->PLAYER1_D5_A,
+                parsedPayload->PLAYER1_D5_B,
+                parsedPayload->PLAYER1_D5_C,
+                parsedPayload->PLAYER1_D5_D,
+                parsedPayload->PLAYER1_D5_E,
+                parsedPayload->PLAYER1_D5_F,
+                parsedPayload->PLAYER1_D5_G,
+                parsedPayload->PLAYER1_D5_H
+            );
+            setBOutput(
+                parsedPayload->PLAYER3_D5_A,
+                parsedPayload->PLAYER3_D5_B,
+                parsedPayload->PLAYER3_D5_C,
+                parsedPayload->PLAYER3_D5_D,
+                parsedPayload->PLAYER3_D5_E,
+                parsedPayload->PLAYER3_D5_F,
+                parsedPayload->PLAYER3_D5_G,
+                parsedPayload->PLAYER3_D5_H
+            );
+        }
+        else if (digit == 6) {
+            setAOutput(
+                parsedPayload->PLAYER1_D6_A,
+                parsedPayload->PLAYER1_D6_B,
+                parsedPayload->PLAYER1_D6_C,
+                parsedPayload->PLAYER1_D6_D,
+                parsedPayload->PLAYER1_D6_E,
+                parsedPayload->PLAYER1_D6_F,
+                parsedPayload->PLAYER1_D6_G,
+                parsedPayload->PLAYER1_D6_H
+            );
+            setBOutput(
+                parsedPayload->PLAYER3_D6_A,
+                parsedPayload->PLAYER3_D6_B,
+                parsedPayload->PLAYER3_D6_C,
+                parsedPayload->PLAYER3_D6_D,
+                parsedPayload->PLAYER3_D6_E,
+                parsedPayload->PLAYER3_D6_F,
+                parsedPayload->PLAYER3_D6_G,
+                parsedPayload->PLAYER3_D6_H
+            );
+        }
+        else if (digit == 7) {
+            setAOutput(
+                parsedPayload->PLAYER2_D1_A,
+                parsedPayload->PLAYER2_D1_B,
+                parsedPayload->PLAYER2_D1_C,
+                parsedPayload->PLAYER2_D1_D,
+                parsedPayload->PLAYER2_D1_E,
+                parsedPayload->PLAYER2_D1_F,
+                parsedPayload->PLAYER2_D1_G,
+                parsedPayload->PLAYER2_D1_H
+            );
+            setBOutput(
+                parsedPayload->PLAYER4_D1_A,
+                parsedPayload->PLAYER4_D1_B,
+                parsedPayload->PLAYER4_D1_C,
+                parsedPayload->PLAYER4_D1_D,
+                parsedPayload->PLAYER4_D1_E,
+                parsedPayload->PLAYER4_D1_F,
+                parsedPayload->PLAYER4_D1_G,
+                parsedPayload->PLAYER4_D1_H
+            );
+        }
+        else if (digit == 8) {
+            setAOutput(
+                parsedPayload->PLAYER2_D2_A,
+                parsedPayload->PLAYER2_D2_B,
+                parsedPayload->PLAYER2_D2_C,
+                parsedPayload->PLAYER2_D2_D,
+                parsedPayload->PLAYER2_D2_E,
+                parsedPayload->PLAYER2_D2_F,
+                parsedPayload->PLAYER2_D2_G,
+                parsedPayload->PLAYER2_D2_H
+            );
+            setBOutput(
+                parsedPayload->PLAYER4_D2_A,
+                parsedPayload->PLAYER4_D2_B,
+                parsedPayload->PLAYER4_D2_C,
+                parsedPayload->PLAYER4_D2_D,
+                parsedPayload->PLAYER4_D2_E,
+                parsedPayload->PLAYER4_D2_F,
+                parsedPayload->PLAYER4_D2_G,
+                parsedPayload->PLAYER4_D2_H
+            );
+        }
+        else if (digit == 9) {
+            setAOutput(
+                parsedPayload->PLAYER2_D3_A,
+                parsedPayload->PLAYER2_D3_B,
+                parsedPayload->PLAYER2_D3_C,
+                parsedPayload->PLAYER2_D3_D,
+                parsedPayload->PLAYER2_D3_E,
+                parsedPayload->PLAYER2_D3_F,
+                parsedPayload->PLAYER2_D3_G,
+                parsedPayload->PLAYER2_D3_H
+            );
+            setBOutput(
+                parsedPayload->PLAYER4_D3_A,
+                parsedPayload->PLAYER4_D3_B,
+                parsedPayload->PLAYER4_D3_C,
+                parsedPayload->PLAYER4_D3_D,
+                parsedPayload->PLAYER4_D3_E,
+                parsedPayload->PLAYER4_D3_F,
+                parsedPayload->PLAYER4_D3_G,
+                parsedPayload->PLAYER4_D3_H
+            );
+        }
+        else if (digit == 10) {
+            setAOutput(
+                parsedPayload->PLAYER2_D4_A,
+                parsedPayload->PLAYER2_D4_B,
+                parsedPayload->PLAYER2_D4_C,
+                parsedPayload->PLAYER2_D4_D,
+                parsedPayload->PLAYER2_D4_E,
+                parsedPayload->PLAYER2_D4_F,
+                parsedPayload->PLAYER2_D4_G,
+                parsedPayload->PLAYER2_D4_H
+            );
+            setBOutput(
+                parsedPayload->PLAYER4_D4_A,
+                parsedPayload->PLAYER4_D4_B,
+                parsedPayload->PLAYER4_D4_C,
+                parsedPayload->PLAYER4_D4_D,
+                parsedPayload->PLAYER4_D4_E,
+                parsedPayload->PLAYER4_D4_F,
+                parsedPayload->PLAYER4_D4_G,
+                parsedPayload->PLAYER4_D4_H
+            );
+        }
+        else if (digit == 11) {
+            setAOutput(
+                parsedPayload->PLAYER2_D5_A,
+                parsedPayload->PLAYER2_D5_B,
+                parsedPayload->PLAYER2_D5_C,
+                parsedPayload->PLAYER2_D5_D,
+                parsedPayload->PLAYER2_D5_E,
+                parsedPayload->PLAYER2_D5_F,
+                parsedPayload->PLAYER2_D5_G,
+                parsedPayload->PLAYER2_D5_H
+            );
+            setBOutput(
+                parsedPayload->PLAYER4_D5_A,
+                parsedPayload->PLAYER4_D5_B,
+                parsedPayload->PLAYER4_D5_C,
+                parsedPayload->PLAYER4_D5_D,
+                parsedPayload->PLAYER4_D5_E,
+                parsedPayload->PLAYER4_D5_F,
+                parsedPayload->PLAYER4_D5_G,
+                parsedPayload->PLAYER4_D5_H
+            );
+        }
+        else if (digit == 12) {
+            setAOutput(
+                parsedPayload->PLAYER2_D6_A,
+                parsedPayload->PLAYER2_D6_B,
+                parsedPayload->PLAYER2_D6_C,
+                parsedPayload->PLAYER2_D6_D,
+                parsedPayload->PLAYER2_D6_E,
+                parsedPayload->PLAYER2_D6_F,
+                parsedPayload->PLAYER2_D6_G,
+                parsedPayload->PLAYER2_D6_H
+            );
+            setBOutput(
+                parsedPayload->PLAYER4_D6_A,
+                parsedPayload->PLAYER4_D6_B,
+                parsedPayload->PLAYER4_D6_C,
+                parsedPayload->PLAYER4_D6_D,
+                parsedPayload->PLAYER4_D6_E,
+                parsedPayload->PLAYER4_D6_F,
+                parsedPayload->PLAYER4_D6_G,
+                parsedPayload->PLAYER4_D6_H
+            );
+        }
+        else if (digit == 13) {
+            setCOutput(
+                parsedPayload->STATUS_D13_A,
+                parsedPayload->STATUS_D13_B,
+                parsedPayload->STATUS_D13_C,
+                parsedPayload->STATUS_D13_D,
+                parsedPayload->STATUS_D13_E,
+                parsedPayload->STATUS_D13_F,
+                parsedPayload->STATUS_D13_G,
+                0
+            );
+        }
+        else if (digit == 14) {
+            setCOutput(
+                parsedPayload->STATUS_D14_A,
+                parsedPayload->STATUS_D14_B,
+                parsedPayload->STATUS_D14_C,
+                parsedPayload->STATUS_D14_D,
+                parsedPayload->STATUS_D14_E,
+                parsedPayload->STATUS_D14_F,
+                parsedPayload->STATUS_D14_G,
+                0
+            );
+        }
+        else if (digit == 15) {
+            setCOutput(
+                parsedPayload->STATUS_D15_A,
+                parsedPayload->STATUS_D15_B,
+                parsedPayload->STATUS_D15_C,
+                parsedPayload->STATUS_D15_D,
+                parsedPayload->STATUS_D15_E,
+                parsedPayload->STATUS_D15_F,
+                parsedPayload->STATUS_D15_G,
+                0
+            );
+        }
+        else if (digit == 16) {
+            setCOutput(
+                parsedPayload->STATUS_D16_A,
+                parsedPayload->STATUS_D16_B,
+                parsedPayload->STATUS_D16_C,
+                parsedPayload->STATUS_D16_D,
+                parsedPayload->STATUS_D16_E,
+                parsedPayload->STATUS_D16_F,
+                parsedPayload->STATUS_D16_G,
+                0
+            );
+        }
 }
 
 void onRead() {
         payload[payloadIndex] = i2c1_driver_getRXData();
         payloadIndex++;
-        payloadReady = payloadIndex >= 28;
+        // If we have a complete payload, copy it to our double buffer
+        if (payloadIndex >= 28) {
+//            memcpy(payloadComplete, payload, 28);
+            for(int i = 0; i < 28; i++) {
+                payloadComplete[i] = payload[i];
+            }
+        }
+//        payloadReady = payloadIndex >= 28;
 //        payloadReady = true;
     }
     
-    void onAddr() {
-        payloadIndex = 0;
-        payloadReady = false;
-        D13_Toggle();
-    }
+void onAddr() {
+    payloadIndex = 0;
+//        payloadReady = false;
+    // toggle LED/Diode D13 to flash the LED.
+    D13_Toggle();
+}
 /**
  End of File
 */
