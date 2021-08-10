@@ -1,5 +1,5 @@
 /**
-  Generated Main Source File
+ MOPO PINBALL DISPLAYS PIC
 
   Company:
     Microchip Technology Inc.

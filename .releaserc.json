@@ -3,8 +3,14 @@
     "plugins": [
         "@semantic-release/commit-analyzer",
         "@semantic-release/release-notes-generator",
-        "@semantic-release/github",
         "@semantic-release/npm",
-        ["@semantic-release/git", {"assets": "package.json"}]
+        ["@semantic-release/git", {"assets": "package.json"}],
+        ["@semantic-release/github", {
+            "assets": [
+                "mopo-displays/dist/default/production/mopo-displays.production.hex",
+                "mopo-driver/dist/default/production/mopo-driver.production.hex",
+                "mopo-switches/dist/default/production/mopo-switches.production.hex"
+            ]
+        }]
     ]
 }
