@@ -17,12 +17,12 @@
          <string>class com.microchip.mcc.mcu8.pinManager.PinManager</string>
       </entry>
       <entry>
-         <string>I2CSLAVE</string>
-         <string>class com.microchip.mcc.foundationservices.modules.softwaredriver.I2CSlave.I2CSLAVE</string>
-      </entry>
-      <entry>
          <string>MSSP1</string>
          <string>class com.microchip.mcc.foundationservices.modules.peripheraldriver.mssp.MSSP</string>
+      </entry>
+      <entry>
+         <string>I2CSLAVE</string>
+         <string>class com.microchip.mcc.foundationservices.modules.softwaredriver.I2CSlave.I2CSLAVE</string>
       </entry>
       <entry>
          <string>RESET</string>
@@ -428,7 +428,7 @@
       </entry>
       <entry>
          <key class="com.microchip.mcc.core.tokenManager.RegisterKey" moduleName="INTERNAL OSCILLATOR" registerAlias="OSCCON"/>
-         <value>64</value>
+         <value>112</value>
       </entry>
       <entry>
          <key class="com.microchip.mcc.core.tokenManager.SettingKey" moduleName="Pin Module" registerAlias="WPUB" settingAlias="WPUB3"/>
@@ -1216,7 +1216,7 @@
       </entry>
       <entry>
          <key class="com.microchip.mcc.core.tokenManager.CustomKey" moduleName="INTERNAL OSCILLATOR" name="CustomIRFC"/>
-         <value>2MHz_HFINTOSC/8</value>
+         <value>16MHz_HFINTOSC</value>
       </entry>
       <entry>
          <key class="com.microchip.mcc.core.tokenManager.SettingKey" moduleName="System Module" registerAlias="CONFIG3H" settingAlias="P2BMX"/>
@@ -2208,7 +2208,7 @@
       </entry>
       <entry>
          <key class="com.microchip.mcc.core.tokenManager.CustomKey" moduleName="I2CSLAVE" name="pubSubI2CSLAVE_I2C/Functions"/>
-         <value>2147.506525619354</value>
+         <value>321.3692290083392</value>
       </entry>
       <entry>
          <key class="com.microchip.mcc.core.tokenManager.SettingKey" moduleName="System Module" registerAlias="CONFIG6L" settingAlias="WRT2"/>
@@ -2228,7 +2228,7 @@
       </entry>
       <entry>
          <key class="com.microchip.mcc.core.tokenManager.CustomKey" moduleName="MSSP1" name="i2CBaudRateValue"/>
-         <value>0x4</value>
+         <value>0x27</value>
       </entry>
       <entry>
          <key class="com.microchip.mcc.core.tokenManager.CustomKey" moduleName="Pin Module" name="anselUserSetRA1"/>
@@ -2516,7 +2516,7 @@
       </entry>
       <entry>
          <key class="com.microchip.mcc.core.tokenManager.SettingKey" moduleName="INTERNAL OSCILLATOR" registerAlias="OSCCON" settingAlias="IRCF"/>
-         <value>2MHz_HFINTOSC/8</value>
+         <value>16MHz_HFINTOSC</value>
       </entry>
       <entry>
          <key class="com.microchip.mcc.core.tokenManager.RegisterKey" moduleName="Pin Module" registerAlias="INTCON2"/>
@@ -2564,7 +2564,7 @@
       </entry>
       <entry>
          <key class="com.microchip.mcc.core.tokenManager.CustomKey" moduleName="INTERNAL OSCILLATOR" name="CurrentSystemClockInHz"/>
-         <value>2000000</value>
+         <value>16000000</value>
       </entry>
       <entry>
          <key class="com.microchip.mcc.core.tokenManager.CustomKey" moduleName="INTERNAL OSCILLATOR" name="CustomHardwarePll"/>
@@ -3660,7 +3660,7 @@
       </entry>
       <entry>
          <key class="com.microchip.mcc.core.tokenManager.CustomKey" moduleName="INTERNAL OSCILLATOR" name="FOSCClockValue"/>
-         <value>2000000</value>
+         <value>16000000</value>
       </entry>
       <entry>
          <key class="com.microchip.mcc.core.tokenManager.OptionKey" moduleName="MSSP1" registerAlias="SSPSTAT" settingAlias="SMP" alias="Standard Speed"/>
@@ -4097,16 +4097,16 @@
    </tokenMap>
    <generatedFileHashHistoryMap class="java.util.HashMap">
       <entry>
+         <file>mcc_generated_files\interrupt_manager.h</file>
+         <hash>3340e27426cc8afc943b43aa63111fbd3bb3319cd80eac54eb08f98de07e5809</hash>
+      </entry>
+      <entry>
          <file>mcc_generated_files\mcc.h</file>
          <hash>45b9a9113d5e9a640a40203b0f897f5d19804a37fe28aaedee1ac9e29ebd23a6</hash>
       </entry>
       <entry>
          <file>mcc_generated_files\device_config.h</file>
-         <hash>fabb05257a6b53ed05b4800911f061fefd54076f884a6606e5b94780fbbdbc4d</hash>
-      </entry>
-      <entry>
-         <file>mcc_generated_files\interrupt_manager.h</file>
-         <hash>3340e27426cc8afc943b43aa63111fbd3bb3319cd80eac54eb08f98de07e5809</hash>
+         <hash>4818af24eb5a68783eaa3e0024d49e254e7da30368566de38e9682c8b76a9c17</hash>
       </entry>
       <entry>
          <file>main.c</file>
@@ -4126,27 +4126,27 @@
       </entry>
       <entry>
          <file>mcc_generated_files\i2c1_driver.c</file>
-         <hash>e4f0a6067e19d4598b880b61ce4879090d22e2becd41ddd718e92dde3712ff5b</hash>
+         <hash>4ca9ddc53aec6c23ff26b3d189c2d9beba5505d456533fd08e5d2b13853b2487</hash>
       </entry>
       <entry>
          <file>mcc_generated_files\pin_manager.c</file>
          <hash>db88e6f1eab7ce14f84fcfd8f3c26129a9d92e381c19c475023be98286fbc982</hash>
       </entry>
       <entry>
-         <file>mcc_generated_files\drivers\i2c_slave.c</file>
-         <hash>d8f3a9fbaaf672725bc950af4a475617b2a229c7cd70cfaeeb3403d0441b6b5a</hash>
-      </entry>
-      <entry>
          <file>mcc_generated_files\i2c1_driver.h</file>
          <hash>416c80cbea1dd4cb8fb88945a9563f2599aa3f287f362ebc5288cf22f41ef677</hash>
       </entry>
       <entry>
-         <file>mcc_generated_files\mcc.c</file>
-         <hash>a0685389404e8cf48c8c8a5aa103af1692039e0f7ec04851c4dc6c40cac4ce59</hash>
+         <file>mcc_generated_files\drivers\i2c_slave.c</file>
+         <hash>d8f3a9fbaaf672725bc950af4a475617b2a229c7cd70cfaeeb3403d0441b6b5a</hash>
       </entry>
       <entry>
          <file>mcc_generated_files\interrupt_manager.c</file>
          <hash>76c08806d2349d7ce767fc3a0bc8046d63a8dfc5ed471d92433ad4684935afa4</hash>
+      </entry>
+      <entry>
+         <file>mcc_generated_files\mcc.c</file>
+         <hash>cf544669cbafc41012de4e27e785d15f546b8e57d81b75ef0a1d0c9b3cdd4724</hash>
       </entry>
    </generatedFileHashHistoryMap>
    <mc3libFileHashHistoryMap class="java.util.HashMap"/>
