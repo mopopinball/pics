@@ -40,7 +40,6 @@ uint8_t payload[28];
 //uint8_t payloadComplete[28];
 volatile uint32_t tick = 0;
 
-void displaysIsr(void);
 void updateDisplays(void);
 void onAddr(void);
 void onRead(void);
@@ -93,11 +92,6 @@ void main(void)
         // 80A=24+4 bytes
         // 80B=40bytes
     }
-}
-
-void displaysIsr() {
-    D13_Toggle();
-    updateDisplays();
 }
 
 void updateDisplays() {
