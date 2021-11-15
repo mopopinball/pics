@@ -1,6 +1,6 @@
 {
   "name": "pics",
-  "version": "1.0.0-beta.10",
+  "version": "1.0.0-beta.11",
   "private": true,
   "description": "Embedded code running on the PIC chips",
   "main": "index.js",
