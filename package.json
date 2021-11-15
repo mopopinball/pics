@@ -1,0 +1,25 @@
+{
+  "name": "pics",
+  "version": "1.0.0-beta.12",
+  "private": true,
+  "description": "Embedded code running on the PIC chips",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mopopinball/pics.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mopopinball/pics/issues"
+  },
+  "homepage": "https://github.com/mopopinball/pics#readme",
+  "devDependencies": {
+    "@semantic-release/git": "10.0.1",
+    "@semantic-release/exec": "6.0.2",
+    "semantic-release": "18.0.0"
+  }
+}

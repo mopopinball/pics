@@ -1,0 +1,17 @@
+{
+    "branches": ["master", {"name": "beta", "prerelease": true}],
+    "plugins": [
+        "@semantic-release/commit-analyzer",
+        "@semantic-release/release-notes-generator",
+        "@semantic-release/npm",
+        ["@semantic-release/exec", {
+            "prepareCmd": "./prepare.sh"
+        }],
+        ["@semantic-release/git", {"assets": ["package.json", "versions/switches-version.json", "versions/displays-version.json", "versions/driver-version.json"]}],
+        ["@semantic-release/github", {
+            "assets": [
+                "dist.tar.gz"
+            ]
+        }]
+    ]
+}
