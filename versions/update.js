@@ -10,6 +10,7 @@ const updateVersionFile = (typeString) => {
     if(swHash !== versionManifest.hash) {
         versionManifest.version = semver.inc(versionManifest.version, 'minor');
         versionManifest.hash = swHash;
+        versionManifest.date = new Date().toString();
         console.info(`Updated ${typeString} to version ${versionManifest.version}`);
         writeFileSync(`./${typeString}-version.json`, JSON.stringify(versionManifest));
     }
