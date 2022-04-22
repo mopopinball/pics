@@ -1,24 +1,6 @@
-/**
-  Generated Main Source File
-
-  Company:
-    Microchip Technology Inc.
-
-  File Name:
-    main.c
-
-  Summary:
-    This is the main file generated using PIC10 / PIC12 / PIC16 / PIC18 MCUs
-
-  Description:
-    This header file provides implementations for driver APIs for all modules selected in the GUI.
-    Generation Information :
-        Product Revision  :  PIC10 / PIC12 / PIC16 / PIC18 MCUs - 1.78
-        Device            :  PIC18F45K22
-        Driver Version    :  2.00
-*/
-
 /*
+ *  MOPO PINBALL DRIVERS
+ * 
     (c) 2018 Microchip Technology Inc. and its subsidiaries. 
     
     Subject to your compliance with these terms, you may use Microchip software and any 
@@ -84,15 +66,9 @@ void main(void)
     // Enable the Global Interrupts
     INTERRUPT_GlobalInterruptEnable();
 
-    // Disable the Global Interrupts
-    //INTERRUPT_GlobalInterruptDisable();
-
     // Enable the Peripheral Interrupts
     INTERRUPT_PeripheralInterruptEnable();
 
-    // Disable the Peripheral Interrupts
-    //INTERRUPT_PeripheralInterruptDisable();   
-    
     mssp1_enableIRQ();
     
     D6_SetHigh();
@@ -133,7 +109,7 @@ void main(void)
 // [LLLLLLLL][LSLLLLLL][LLLLLLLL][LLLLLLLL][LLLLLLLL][LLLLLLLL][LLLLLCCC][CCCCCCSS][SS000000]
 void updateLamps(DriverPayload* data) {
     // loop thru and process each device select (DS) line/chip.
-    for(int i = 1; i < 13; i ++) {
+    for(volatile int i = 1; i < 13; i ++) {
         disableAllDeviceSelects();
         if(i == 1) {
             // Game Over Relay, Tilt Relay, Coil Lockout Coil, L2/L3 Shoot Again
@@ -237,13 +213,13 @@ void updateSound(DriverPayload* parsedPayload) {
 }
 
 void onAddr() {
-    uint8_t sAddr = i2c1_driver_getAddr();    
+//    uint8_t sAddr = i2c1_driver_getAddr();    
     payloadIndex = 0;
     payloadReady = false;
 }
 
 void onRead() {
-    payload[payloadIndex] = i2c1_driver_getRXData();
+    payload[payloadIndex] = i2c_slave_read();
     payloadIndex++;
     payloadReady = payloadIndex >= 9;
 }
@@ -272,7 +248,3 @@ void disableAllDeviceSelects() {
     DS11_SetLow();
     DS12_SetLow();
 }
-
-/**
- End of File
-*/

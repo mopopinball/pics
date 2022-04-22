@@ -88,7 +88,7 @@ __bit i2c1_driver_open(void)
         SSP1STAT = 0x00;
         SSP1CON1 = 0x28;
         SSP1CON2 = 0x00;
-        SSP1ADD = 3;
+        SSP1ADD = 0x13;
         return true;
     }
     else
@@ -129,9 +129,9 @@ __bit i2c1_driver_initSlaveHardware(void)
  * SCIE will be set to enable interrupts on START.  This will allow us to detect
  * both a START and a RESTART event and prepare to restart communications.
  */
-        SSP1CON1 |= 0x36; //setup I2C Slave (7-bit Addressing)
-        SSP1STAT = 0x80;
-        SSP1CON2 = 0x01;
+        SSP1CON1 |= 0x06; //setup I2C Slave (7-bit Addressing)
+        SSP1STAT = 0x00;
+        SSP1CON2 = 0x00;
         
         SSP1CON1bits.SSPEN = 1;
         return true;
