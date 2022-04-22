@@ -184,6 +184,7 @@ void updateLamps(DriverPayload* data) {
             setLampData(ld);
             DS12_SetHigh();
         }
+        __delay_ms(50);
     }
 }
 
