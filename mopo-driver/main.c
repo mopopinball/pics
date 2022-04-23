@@ -115,82 +115,82 @@ void updateLamps(DriverPayload* data) {
     // loop thru and process each device select (DS) line/chip.
     for(volatile int i = 1; i < 13; i ++) {
         disableAllDeviceSelects();
-        __delay_us(500);
+        __delay_us(50);
         if(i == 1) {
             // Game Over Relay, Tilt Relay, Coil Lockout Coil, L2/L3 Shoot Again
             LampData ld = {data->L0, data->L1, data->L2, data->L3};
             setLampData(ld);
-            __delay_us(500);
+            __delay_us(50);
             DS1_SetHigh();
         }
         else if(i == 2) {
             // L4, L5, L6, L7
             LampData ld = {data->L4, data->L5, data->L6, data->L7};
             setLampData(ld);
-            __delay_us(500);
+            __delay_us(50);
             DS2_SetHigh();
         }
         else if(i == 3) {
             // L8, S16, L11, L10
             LampData ld = {data->L8, data->L9, data->L11, data->L10};
             setLampData(ld);
-            __delay_us(500);
+            __delay_us(50);
             DS3_SetHigh();
         }
         else if (i == 4) {
             // L12,13,14,15
             LampData ld = {data->L12, data->L13, data->L14, data->L15};
             setLampData(ld);
-            __delay_us(500);
+            __delay_us(50);
             DS4_SetHigh();
         }
         else if (i == 5) {
             // L16,17,18,19
             LampData ld = {data->L16, data->L17, data->L18, data->L19};
             setLampData(ld);
-            __delay_us(500);
+            __delay_us(50);
             DS5_SetHigh();
         }
         else if(i == 6) {
             // L20, L21, L22, L23
             LampData ld = {data->L20, data->L21, data->L22, data->L23};
             setLampData(ld);
-            __delay_us(500);
+            __delay_us(50);
             DS6_SetHigh();
         }
         else if(i == 7) {
             // L24, L25, L26, L27
             LampData ld = {data->L24, data->L25, data->L26, data->L27};
             setLampData(ld);
-            __delay_us(500);
+            __delay_us(50);
             DS7_SetHigh();
         }
         else if(i == 8) {
             // L28, L29, L30, L31
             LampData ld = {data->L28, data->L29, data->L30, data->L31};
             setLampData(ld);
-            __delay_us(500);
+            __delay_us(50);
             DS8_SetHigh();
         }
         else if(i == 9) {
             // L32, L33, L34, L35
             LampData ld = {data->L32, data->L33, data->L34, data->L35};
             setLampData(ld);
-            __delay_us(500);
+            __delay_us(50);
             DS9_SetHigh();
         }
         else if(i == 10) {
             // L36, L37, L38, L39
             LampData ld = {data->L36, data->L37, data->L38, data->L39};
             setLampData(ld);
-            __delay_us(500);
+            __delay_us(50);
             DS10_SetHigh();
         }
         else if(i == 11) {
             // L40, L41, L42, L43
             LampData ld = {data->L40, data->L41, data->L42, data->L43};
             setLampData(ld);
-            __delay_us(500);
+            __delay_us(50);
             DS11_SetHigh();
         }
         else if(i == 12) {
@@ -198,11 +198,12 @@ void updateLamps(DriverPayload* data) {
             // 48-51 are the not/inverse state.
             LampData ld = {data->L44, data->L45, data->L46, data->L47};
             setLampData(ld);
-            __delay_us(500);
+            __delay_us(50);
             DS12_SetHigh();
         }
-        __delay_ms(10);
     }
+    __delay_us(50);
+    disableAllDeviceSelects();
 }
 
 void updateCoils(DriverPayload* parsedPayload) {
